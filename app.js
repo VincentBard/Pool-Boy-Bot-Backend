@@ -38,6 +38,7 @@ app.use(express.urlencoded({ extended: true }));
 //ex: app.use('/api/user', userRoute)
 
 
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
