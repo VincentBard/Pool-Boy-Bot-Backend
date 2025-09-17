@@ -1,9 +1,18 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./db');
-const authMiddleware = require('./middleware/auth');
-const errorHandler = require('./middleware/error');
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import connectDB from "./db.js";
+import authMiddleware from "./middleware/auth.js";
+import errorHandler from "./middleware/error.js";
+import mongoose from "mongoose";
+
+// Import route modules
+import userRoutes from "./routes/users.js";
+import deviceRoutes from "./routes/devices.js";
+import readingRoutes from "./routes/readings.js";
+import alertRoutes from "./routes/alerts.js";
+
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,8 +21,8 @@ connectDB();
 //Url allowed to make calls to this backend
 const allowedOrigins = [
   'http://localhost:8080',
-  'http://smart-garden.netlify.app',
-  'https://smart-garden.netlify.app',
+  'http://pool-bot.netlify.app',
+  'https://pool-bot.netlify.app',
 ];
 
 const corsOptions = {
@@ -35,10 +44,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Add Routes Here***
-//ex: app.use('/api/user', userRoute)
+app.use("/api/users", userRoutes);
+app.use("/api/devices", deviceRoutes);
+app.use("/api/readings", readingRoutes);
+app.use("/api/alerts", alertRoutes);
+app.use(errorHandler);
 
-
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+    app.listen(process.env.PORT || 5000, () => console.log("Server running"));
+  })
+  .catch(err => console.error(err));
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+export default app;
