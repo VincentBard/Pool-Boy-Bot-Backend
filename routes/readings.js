@@ -1,5 +1,5 @@
 import express from "express";
-import Reading from "../database/sensorReadingSchema.js";
+import Reading from "../database/sensorReadingsSchema.js";
 import Device from "../database/deviceSchema.js";
 import authMiddleware from "../middleware/auth.js";
 import ensureUser from "../middleware/ensureUser.js";
