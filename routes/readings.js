@@ -1,33 +1,53 @@
 import express from "express";
-import { SensorReading, Device, User } from "../database/index.js";
+import Reading from "../database/readingSchema.js";
+import Device from "../database/deviceSchema.js";
 import authMiddleware from "../middleware/auth.js";
 import ensureUser from "../middleware/ensureUser.js";
 
 const router = express.Router();
 
-// Get all readings for a device
-router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
+// 📌 GET all readings (only humans should do this)
+router.get("/", authMiddleware, ensureUser, async (req, res, next) => {
   try {
-    const readings = await SensorReading.find({ deviceId: req.params.deviceId }).sort({ recordedAt: -1 });
+    if (req.user.isMachine) {
+      return res.status(403).json({ message: "Machines cannot fetch readings" });
+    }
+
+    const readings = await Reading.find().populate("device");
     res.json(readings);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
-// Add a new reading
-router.post("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
+// 📌 POST a new reading (machines or humans can do this)
+router.post("/", authMiddleware, ensureUser, async (req, res, next) => {
   try {
-    const { temperature, chlorineLevel, turbidity } = req.body;
-    const reading = await SensorReading.create({
-      deviceId: req.params.deviceId,
+    const { deviceId, temperature, pH, chlorine } = req.body;
+
+    if (!deviceId) {
+      return res.status(400).json({ message: "deviceId is required" });
+    }
+
+    // Verify device exists
+    const device = await Device.findById(deviceId);
+    if (!device) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    // Create reading
+    const reading = new Reading({
+      device: device._id,
       temperature,
-      chlorineLevel,
-      turbidity
+      pH,
+      chlorine,
+      recordedBy: req.user.isMachine ? "machine" : req.user.email,
     });
+
+    await reading.save();
     res.status(201).json(reading);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 

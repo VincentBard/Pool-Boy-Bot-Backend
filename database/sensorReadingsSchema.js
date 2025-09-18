@@ -1,11 +1,15 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const SensorReadingSchema = new mongoose.Schema({
-  deviceId: { type: mongoose.Schema.Types.ObjectId, ref: "Device", required: true },
-  temperature: { type: Number },      // °C
-  chlorineLevel: { type: Number },    // ppm
-  turbidity: { type: Number },        // NTU
-  recordedAt: { type: Date, default: Date.now }
-});
+const readingSchema = new mongoose.Schema(
+  {
+    device: { type: mongoose.Schema.Types.ObjectId, ref: "Device", required: true },
+    temperature: Number,
+    pH: Number,
+    chlorine: Number,
+    recordedBy: { type: String }, // "machine" or user email
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('SensorReading', SensorReadingSchema);
+const Reading = mongoose.model("Reading", readingSchema);
+export default Reading;

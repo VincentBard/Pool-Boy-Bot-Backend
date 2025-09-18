@@ -1,17 +1,21 @@
 import User from "../database/userSchema.js";
 
+
 const ensureUser = async (req, res, next) => {
   try {
+    // Machine token (client_credentials grant) has no email
+    if (!req.auth.email) {
+      // Just attach a "machine identity" instead of a user
+      req.user = { isMachine: true, sub: req.auth.sub };
+      return next();
+    }
+
+    // Human user flow
     let user = await User.findOne({ auth0Id: req.auth.sub });
-
     if (!user) {
-      if (!req.auth.email) {
-        return res.status(400).json({ message: "Email missing in JWT" });
-      }
-
       user = await User.create({
         auth0Id: req.auth.sub,
-        email: req.auth.email,  // ✅ use real email
+        email: req.auth.email,
         name: req.auth.name || "New User"
       });
     }
@@ -19,11 +23,6 @@ const ensureUser = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    // if duplicate key error happens, just fetch the existing user
-    if (err.code === 11000) {
-      req.user = await User.findOne({ auth0Id: req.auth.sub });
-      return next();
-    }
     next(err);
   }
 };

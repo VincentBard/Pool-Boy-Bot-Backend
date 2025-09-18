@@ -38,4 +38,19 @@ router.post("/", authMiddleware, ensureUser, async (req, res) => {
   }
 });
 
+// 📌 TEST ONLY: Create a dummy device (⚠️ no auth, for quick testing)
+router.post("/test", async (req, res, next) => {
+  try {
+    const device = new Device({
+      name: "Test Pool Device",
+      location: "Backyard",
+      type: "PoolBot-Prototype",
+    });
+    await device.save();
+    res.status(201).json(device);
+  } catch (err) {
+    next(err);
+  }
+});
+
 export default router;
