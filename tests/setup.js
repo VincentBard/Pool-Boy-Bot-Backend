@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+/*import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { jest } from "@jest/globals";
 
@@ -16,4 +16,4 @@ beforeAll(async () => {
 afterAll(async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
-});
+});*/
