@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import connectDB from "./db.js";
 import authMiddleware from "./middleware/auth.js";
 import errorHandler from "./middleware/error.js";
-import mongoose from "mongoose";
 
 // Import route modules
 import userRoutes from "./routes/users.js";
@@ -12,13 +12,15 @@ import deviceRoutes from "./routes/devices.js";
 import readingRoutes from "./routes/readings.js";
 import alertRoutes from "./routes/alerts.js";
 
-
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-connectDB();
 
-//Url allowed to make calls to this backend
+// Connect to MongoDB
+connectDB(); // or replace with inline mongoose.connect() if you prefer
+
+// CORS configuration
 const allowedOrigins = [
   'http://localhost:8080',
   'http://pool-bot.netlify.app',
@@ -27,7 +29,6 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -43,22 +44,24 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//Add Routes Here***
+// Routes (all routes should internally use authMiddleware where needed)
 app.use("/api/users", userRoutes);
 app.use("/api/devices", deviceRoutes);
 app.use("/api/readings", readingRoutes);
 app.use("/api/alerts", alertRoutes);
+
+// Global error handler
 app.use(errorHandler);
 
-mongoose.connect(process.env.MONGO_URI)
+// Start server only after DB is connected
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => {
     console.log("MongoDB connected");
-    app.listen(process.env.PORT || 5000, () => console.log("Server running"));
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch(err => console.error(err));
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+  .catch(err => console.error("MongoDB connection error:", err));
 
 export default app;
