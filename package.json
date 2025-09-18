@@ -4,7 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watchAll"
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
+    "predeploy": "npm test",
+    "deploy": "node app.js"
   },
   "keywords": [],
   "author": "",
