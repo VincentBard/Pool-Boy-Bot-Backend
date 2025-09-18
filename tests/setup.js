@@ -1,18 +1,17 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import { jest } from "@jest/globals";  // ✅ add this
+import { jest } from "@jest/globals";
 
 dotenv.config();
 
+jest.setTimeout(30000);
 
 beforeAll(async () => {
-  await mongoose.connect(process.env.MONGO_URI, {
+  await mongoose.connect(process.env.MONGO_URI_TEST, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
-    
+    useUnifiedTopology: true,
   });
 });
-jest.setTimeout(30000); // 30 seconds
 
 afterAll(async () => {
   await mongoose.connection.dropDatabase();

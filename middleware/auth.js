@@ -1,7 +1,6 @@
 import { expressjwt as jwt } from "express-jwt";
 import jwks from "jwks-rsa";
 
-
 const authMiddleware = jwt({
   secret: jwks.expressJwtSecret({
     cache: true,
@@ -11,7 +10,7 @@ const authMiddleware = jwt({
   }),
   audience: process.env.AUTH0_AUDIENCE,
   issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-  algorithms: ['RS256'],
+  algorithms: ["RS256"],
 });
 
 export default authMiddleware;

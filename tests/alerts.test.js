@@ -1,27 +1,37 @@
 import request from "supertest";
 import app from "../app.js";
+import { getAuth0Token } from "./getToken.js";
+
+let token;
+
+beforeAll(async () => {
+  token = await getAuth0Token();
+});
 
 describe("Alerts API", () => {
   it("should deny unauthenticated access", async () => {
-    const res = await request(app).get("/api/alerts/12345");
+    const res = await request(app).get("/api/alerts");
     expect(res.statusCode).toBe(401);
   });
 
-  it("should create an alert with valid token", async () => {
-    const token = "mock-valid-jwt";
+  it("should allow authenticated access", async () => {
     const res = await request(app)
-      .post("/api/alerts/12345")
-      .set("Authorization", `Bearer ${token}`)
-      .send({ alertType: "Low Chlorine", message: "Chlorine dropped below safe level", severity: "warning" });
-    expect([201, 401]).toContain(res.statusCode);
+      .get("/api/alerts")
+      .set("Authorization", `Bearer ${token}`);
+
+    expect([200, 204]).toContain(res.statusCode); // in case DB is empty
   });
 
-  it("should resolve an alert", async () => {
-    const token = "mock-valid-jwt";
-    const alertId = "someObjectId"; // replace with real ID in integration
+  it("should create a new alert", async () => {
     const res = await request(app)
-      .patch(`/api/alerts/${alertId}/resolve`)
-      .set("Authorization", `Bearer ${token}`);
-    expect([200, 404, 401]).toContain(res.statusCode);
+      .post("/api/alerts")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        type: "temperature",
+        message: "Water is too cold",
+      });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty("_id");
   });
 });

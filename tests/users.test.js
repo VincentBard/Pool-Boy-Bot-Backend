@@ -1,17 +1,36 @@
 import request from "supertest";
-import app from "../app.js";  // your Express app
+import app from "../app.js";
+import { getAuth0Token } from "./getToken.js";
+
+let token;
+
+beforeAll(async () => {
+  token = await getAuth0Token();
+});
 
 describe("Users API", () => {
-  it("should return 401 without token", async () => {
-    const res = await request(app).get("/api/users/me");
+  it("should deny unauthenticated access", async () => {
+    const res = await request(app).get("/api/users");
     expect(res.statusCode).toBe(401);
   });
 
-  it("should return 200 with token (mock)", async () => {
-    const token = "mock-valid-jwt"; // Replace with a real token or mock Auth0
+  it("should allow authenticated access", async () => {
     const res = await request(app)
-      .get("/api/users/me")
+      .get("/api/users")
       .set("Authorization", `Bearer ${token}`);
-    expect([200, 401]).toContain(res.statusCode);
+    expect([200, 204]).toContain(res.statusCode);
+  });
+
+  it("should create a new user", async () => {
+    const res = await request(app)
+      .post("/api/users")
+      .set("Authorization", `Bearer ${token}`)
+      .send({
+        email: "testuser@example.com",
+        name: "Test User",
+      });
+
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty("_id");
   });
 });
