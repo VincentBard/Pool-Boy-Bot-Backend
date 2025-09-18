@@ -1,11 +1,12 @@
 import express from "express";
 import { SensorReading, Device, User } from "../database/index.js";
 import authMiddleware from "../middleware/auth.js";
+import ensureUser from "../middleware/ensureUser.js";
 
 const router = express.Router();
 
 // Get all readings for a device
-router.get("/:deviceId", authMiddleware, async (req, res) => {
+router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
     const readings = await SensorReading.find({ deviceId: req.params.deviceId }).sort({ recordedAt: -1 });
     res.json(readings);
@@ -15,7 +16,7 @@ router.get("/:deviceId", authMiddleware, async (req, res) => {
 });
 
 // Add a new reading
-router.post("/:deviceId", authMiddleware, async (req, res) => {
+router.post("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
     const { temperature, chlorineLevel, turbidity } = req.body;
     const reading = await SensorReading.create({

@@ -1,11 +1,12 @@
 import express from "express";
 import { Alert } from "../database/index.js";
 import authMiddleware from "../middleware/auth.js";
+import ensureUser from "../middleware/ensureUser.js";
 
 const router = express.Router();
 
 // Get alerts for a device
-router.get("/:deviceId", authMiddleware, async (req, res) => {
+router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
     const alerts = await Alert.find({ deviceId: req.params.deviceId }).sort({ createdAt: -1 });
     res.json(alerts);
@@ -15,7 +16,7 @@ router.get("/:deviceId", authMiddleware, async (req, res) => {
 });
 
 // Create a new alert
-router.post("/:deviceId", authMiddleware, async (req, res) => {
+router.post("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
     const { alertType, message, severity } = req.body;
     const alert = await Alert.create({
@@ -31,7 +32,7 @@ router.post("/:deviceId", authMiddleware, async (req, res) => {
 });
 
 // Mark alert as resolved
-router.patch("/:alertId/resolve", authMiddleware, async (req, res) => {
+router.patch("/:alertId/resolve", authMiddleware, ensureUser, async (req, res) => {
   try {
     const alert = await Alert.findByIdAndUpdate(
       req.params.alertId,

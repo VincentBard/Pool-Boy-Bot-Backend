@@ -1,11 +1,12 @@
 import express from "express";
 import { Device, User } from "../database/index.js";
 import authMiddleware from "../middleware/auth.js";
+import ensureUser from "../middleware/ensureUser.js";
 
 const router = express.Router();
 
 // List devices for authenticated user
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/", authMiddleware, ensureUser, async (req, res) => {
   try {
     const email = req.auth?.["https://example.com/email"];
     const user = await User.findOne({ email });
@@ -19,7 +20,7 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 // Register new device
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, ensureUser, async (req, res) => {
   try {
     const email = req.auth?.["https://example.com/email"];
     const user = await User.findOne({ email });
