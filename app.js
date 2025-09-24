@@ -50,6 +50,22 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/readings", readingRoutes);
 app.use("/api/alerts", alertRoutes);
 
+app.get("/getToken", (req, res) => {
+  const { identity, roomName } = req.query;
+
+  const at = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, {
+    identity: identity || "guest",
+  });
+  at.addGrant({
+    roomJoin: true,
+    room: roomName || "default",
+    canPublish: true,
+    canSubscribe: true,
+  });
+
+  res.json({ token: at.toJwt() });
+});
+
 // Global error handler
 app.use(errorHandler);
 

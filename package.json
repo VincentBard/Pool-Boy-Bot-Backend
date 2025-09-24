@@ -21,6 +21,7 @@
     "express-openid-connect": "^2.19.2",
     "json2csv": "^6.0.0-alpha.2",
     "jwks-rsa": "^3.2.0",
+    "livekit-server-sdk": "^2.13.3",
     "mongoose": "^8.17.0"
   },
   "devDependencies": {
