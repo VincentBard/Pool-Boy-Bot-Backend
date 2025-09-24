@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import connectDB from "./db.js";
 import authMiddleware from "./middleware/auth.js";
 import errorHandler from "./middleware/error.js";
-import AccessToken from "livekit-server-sdk";
+import { AccessToken } from "livekit-server-sdk";
 
 // Import route modules
 import userRoutes from "./routes/users.js";
