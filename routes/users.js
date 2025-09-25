@@ -23,7 +23,7 @@ router.get("/me", authMiddleware, ensureUser, async (req, res) => {
       console.log("DEBUG: no user found in Mongo for", email);
       return res.status(404).json({ message: "User not found" }); // ✅ must be 404
     }
-
+    console.log("DEBUG - user from Mongo:", user);
     return res.status(200).json(user);
   } catch (err) {
     console.error("GET /me error:", err);
