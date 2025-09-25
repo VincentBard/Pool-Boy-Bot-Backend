@@ -10,10 +10,9 @@ import { User } from "../database/index.js";
 // Get profile of authenticated user
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
-    const email = req.auth?.email || req.query.email;
+    const email = req.query.email; // ✅ frontend must send it
 
     if (!email) {
-      console.log("DEBUG: No email provided. req.auth =", req.auth, "req.query =", req.query);
       return res.status(400).json({ message: "Email not provided" });
     }
 
