@@ -8,6 +8,7 @@ const router = express.Router();
 import { User } from "../database/index.js";
 
 // Get profile of authenticated user
+// backend/routes/user.js
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
     const email = req.query.email;
@@ -16,14 +17,16 @@ router.get("/me", authMiddleware, ensureUser, async (req, res) => {
       return res.status(400).json({ message: "Email not provided" });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).lean();
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" }); // ✅ proper 404
+      console.log("DEBUG: no user found in Mongo for", email);
+      return res.status(404).json({ message: "User not found" }); // ✅ must be 404
     }
 
-    res.json(user); // ✅ 200 only if user exists
+    return res.status(200).json(user);
   } catch (err) {
+    console.error("GET /me error:", err);
     res.status(500).json({ error: err.message });
   }
 });
