@@ -64,7 +64,7 @@ app.get("/getToken", (req, res) => {
     canSubscribe: true,
   });
 
-  res.json({ token: at.toJwt() });
+  res.json({ token: at.toJwt });
 });
 
 // Global error handler
