@@ -23,12 +23,12 @@ router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   }
 });
 
-// Create a new user entry if one doesn’t exist
 router.post("/me", authMiddleware, async (req, res) => {
   try {
-    const email = req.auth?.email;  // ✅ use Auth0 email directly
-    if (!email) {
-      return res.status(400).json({ message: "No email claim in token" });
+    const { email, firstName, lastName, jobTitle, phone } = req.body;
+
+    if (!email || !firstName || !lastName || !jobTitle || !phone) {
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
     const existing = await User.findOne({ email });
@@ -36,14 +36,8 @@ router.post("/me", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const { firstName, lastName, jobTitle, phone } = req.body;
-
-    if (!firstName || !lastName || !jobTitle || !phone) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
     const newUser = new User({
-      email,         // ✅ required
+      email,
       firstName,
       lastName,
       jobTitle,
@@ -56,6 +50,7 @@ router.post("/me", authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 export default router;
