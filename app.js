@@ -51,20 +51,27 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/readings", readingRoutes);
 app.use("/api/alerts", alertRoutes);
 
-app.get("/getToken", (req, res) => {
-  const { identity, roomName } = req.query;
+app.get("/getToken", async (req, res) => {
+  const { identity = "guest", roomName = "default" } = req.query;
 
-  const at = new AccessToken(process.env.LIVEKIT_API_KEY, process.env.LIVEKIT_API_SECRET, {
-    identity: identity || "guest",
-  });
+  const at = new AccessToken(
+    process.env.LIVEKIT_API_KEY,
+    process.env.LIVEKIT_API_SECRET,
+    { identity }
+  );
+
   at.addGrant({
     roomJoin: true,
-    room: roomName || "default",
+    room: roomName,
     canPublish: true,
     canSubscribe: true,
   });
 
-  res.json({ token: at.toJwt() });
+  const token = await at.toJwt();      // <-- IMPORTANT
+  // Optional debug:
+  // console.log("token typeof:", typeof token, "len:", token.length);
+
+  res.json({ token });
 });
 
 // Global error handler
