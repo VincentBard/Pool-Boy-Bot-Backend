@@ -10,14 +10,14 @@ import { User } from "../database/index.js";
 // Get profile of authenticated user
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
-    const email = req.query.email; // ✅ frontend must send it
+    const email = req.query.email;
+    console.log("DEBUG: req.query =", req.query);
 
     if (!email) {
       return res.status(400).json({ message: "Email not provided" });
     }
 
     const user = await User.findOne({ email });
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
