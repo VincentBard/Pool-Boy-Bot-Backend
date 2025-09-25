@@ -10,7 +10,7 @@ import { User } from "../database/index.js";
 // Get profile of authenticated user
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
-    const email = req.auth?.["https://example.com/email"];
+    const email = req.auth?.email;  // ✅ simpler
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -26,15 +26,16 @@ router.get("/me", authMiddleware, ensureUser, async (req, res) => {
 // Create a new user entry if one doesn’t exist
 router.post("/me", authMiddleware, async (req, res) => {
   try {
-    const email = req.auth?.["https://example.com/email"];
+    const email = req.auth?.email;  // ✅ use Auth0 email directly
+    if (!email) {
+      return res.status(400).json({ message: "No email claim in token" });
+    }
 
-    // Check if user already exists
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Collect details from frontend form
     const { firstName, lastName, jobTitle, phone } = req.body;
 
     if (!firstName || !lastName || !jobTitle || !phone) {
@@ -42,7 +43,7 @@ router.post("/me", authMiddleware, async (req, res) => {
     }
 
     const newUser = new User({
-      email,
+      email,         // ✅ required
       firstName,
       lastName,
       jobTitle,
@@ -50,7 +51,6 @@ router.post("/me", authMiddleware, async (req, res) => {
     });
 
     await newUser.save();
-
     res.status(201).json(newUser);
   } catch (err) {
     res.status(500).json({ error: err.message });
