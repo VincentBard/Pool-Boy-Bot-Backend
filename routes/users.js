@@ -9,9 +9,11 @@ import { User } from "../database/index.js";
 
 // Get profile of authenticated user
 // backend/routes/user.js
-router.get("/me", authMiddleware, ensureUser, async (req, res) => {
+router.get("/me", authMiddleware,  async (req, res) => {
+  console.log("DEBUG - hit /me handler");
   try {
     const email = req.query.email;
+    
 
     if (!email) {
       return res.status(400).json({ message: "Email not provided" });
