@@ -10,12 +10,52 @@ import { User } from "../database/index.js";
 // Get profile of authenticated user
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.auth?.["https://example.com/email"] });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    const email = req.auth?.["https://example.com/email"];
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Create a new user entry if one doesn’t exist
+router.post("/me", authMiddleware, async (req, res) => {
+  try {
+    const email = req.auth?.["https://example.com/email"];
+
+    // Check if user already exists
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Collect details from frontend form
+    const { firstName, lastName, jobTitle, phone } = req.body;
+
+    if (!firstName || !lastName || !jobTitle || !phone) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const newUser = new User({
+      email,
+      firstName,
+      lastName,
+      jobTitle,
+      phone,
+    });
+
+    await newUser.save();
+
+    res.status(201).json(newUser);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 export default router;
