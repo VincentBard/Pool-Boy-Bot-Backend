@@ -11,18 +11,18 @@ import { User } from "../database/index.js";
 router.get("/me", authMiddleware, ensureUser, async (req, res) => {
   try {
     const email = req.query.email;
-    console.log("DEBUG: req.query =", req.query);
 
     if (!email) {
       return res.status(400).json({ message: "Email not provided" });
     }
 
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" }); // ✅ proper 404
     }
 
-    res.json(user);
+    res.json(user); // ✅ 200 only if user exists
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
