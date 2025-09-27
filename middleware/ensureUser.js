@@ -19,7 +19,6 @@ const ensureUser = async (req, res, next) => {
           name: req.auth.name || "New User",
           firstName: req.auth.given_name || "Unknown",
           lastName: req.auth.family_name || "Unknown",
-          jobTitle: "Unassigned",
           phone: "N/A",
         },
       },

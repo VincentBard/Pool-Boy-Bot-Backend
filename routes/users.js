@@ -35,9 +35,9 @@ router.get("/me", authMiddleware,  async (req, res) => {
 
 router.post("/me", authMiddleware, async (req, res) => {
   try {
-    const { email, firstName, lastName, jobTitle, phone } = req.body;
+    const { email, firstName, lastName, phone } = req.body;
 
-    if (!email || !firstName || !lastName || !jobTitle || !phone) {
+    if (!email || !firstName || !lastName  || !phone) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -50,7 +50,6 @@ router.post("/me", authMiddleware, async (req, res) => {
       email,
       firstName,
       lastName,
-      jobTitle,
       phone,
     });
 

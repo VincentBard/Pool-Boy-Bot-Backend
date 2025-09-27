@@ -12,7 +12,6 @@ const UserSchema = new mongoose.Schema({
   // New profile fields
   firstName: { type: String, required: false },
   lastName: { type: String, required: false },
-  jobTitle: { type: String, required: false },
   phone: { type: String, required: false },
 });
 
