@@ -11,14 +11,20 @@ const ensureUser = async (req, res, next) => {
     }
 
     // Human user flow
-    let user = await User.findOne({ auth0Id: req.auth.sub });
-    if (!user) {
-      user = await User.create({
-        auth0Id: req.auth.sub,
-        email: req.auth.email,
-        name: req.auth.name || "New User"
-      });
-    }
+    let user = await User.findOneAndUpdate(
+      { email: req.auth.email },   // use email as stable identifier
+      {
+        $setOnInsert: {
+          auth0Id: req.auth.sub,
+          name: req.auth.name || "New User",
+          firstName: req.auth.given_name || "Unknown",
+          lastName: req.auth.family_name || "Unknown",
+          jobTitle: "Unassigned",
+          phone: "N/A",
+        },
+      },
+      { new: true, upsert: true }
+    );
 
     req.user = user;
     next();
