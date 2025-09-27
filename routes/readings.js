@@ -91,7 +91,9 @@ router.post("/", authMiddleware, ensureUser, async (req, res, next) => {
       device: device._id,
       temperature,
       pH,
-      chlorine,
+      tds,
+      batteryVoltage,
+      batteryPercentage,
       recordedBy: req.user.isMachine ? "machine" : req.user.email,
     });
 
