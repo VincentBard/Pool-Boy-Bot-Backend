@@ -10,10 +10,10 @@ const UserSchema = new mongoose.Schema({
   passwordHash: { type: String }, // optional
 
   // New profile fields
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
-  jobTitle: { type: String, required: true },
-  phone: { type: String, required: true },
+  firstName: { type: String, required: false },
+  lastName: { type: String, required: false },
+  jobTitle: { type: String, required: false },
+  phone: { type: String, required: false },
 });
 
 export default mongoose.model('User', UserSchema);
