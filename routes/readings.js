@@ -74,7 +74,14 @@ router.get("/device/:deviceId/latest", authMiddleware, ensureUser, async (req, r
 // 📌 POST a new reading (machines or humans can do this)
 router.post("/", authMiddleware, ensureUser, async (req, res, next) => {
   try {
-    const { deviceId, temperature, pH, chlorine } = req.body;
+    const { 
+      deviceId, 
+      temperature, 
+      pH, 
+      tds, 
+      batteryVoltage, 
+      batteryPercentage 
+    } = req.body;
 
     if (!deviceId) {
       return res.status(400).json({ message: "deviceId is required" });
