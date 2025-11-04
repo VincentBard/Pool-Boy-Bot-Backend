@@ -24,6 +24,7 @@ connectDB(); // or replace with inline mongoose.connect() if you prefer
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:8080',
+  'https://localhost:8080',
   'http://pool-bot.netlify.app',
   'https://pool-bot.netlify.app',
 ];
