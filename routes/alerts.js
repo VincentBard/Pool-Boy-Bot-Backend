@@ -11,18 +11,18 @@ router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
     const { deviceId } = req.params;
 
-    // Time threshold = last 24 hours
+    // Last 24 hours threshold
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-    // Delete old alerts
+    // Delete alerts older than 24 hours
     await Alert.deleteMany({
-      deviceId,
+      device: deviceId,
       createdAt: { $lt: oneDayAgo }
     });
 
-    // Fetch alerts from the past 24 hours
+    // Get alerts from past 24 hours
     const alerts = await Alert.find({
-      deviceId,
+      device: deviceId,
       createdAt: { $gte: oneDayAgo }
     }).sort({ createdAt: -1 });
 
