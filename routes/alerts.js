@@ -16,18 +16,34 @@ router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
 });
 
 // Create a new alert
-router.post("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
+router.post("/:deviceId", authMiddleware, ensureUser, async (req, res, next) => {
   try {
     const { alertType, message, severity } = req.body;
-    const alert = await Alert.create({
-      deviceId: req.params.deviceId,
+    const { deviceId } = req.params;
+
+    if (!deviceId) {
+      return res.status(400).json({ message: "deviceId is required" });
+    }
+
+    // Verify device exists
+    const device = await Device.findById(deviceId);
+    if (!device) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    // Create alert with "recordedBy" identical to reading logic
+    const alert = new Alert({
+      device: device._id,
       alertType,
       message,
-      severity
+      severity,
+      recordedBy: req.user.isMachine ? "machine" : req.user.email,
     });
+
+    await alert.save();
     res.status(201).json(alert);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 });
 
