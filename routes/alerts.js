@@ -9,7 +9,23 @@ const router = express.Router();
 // Get alerts for a device
 router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   try {
-    const alerts = await Alert.find({ deviceId: req.params.deviceId }).sort({ createdAt: -1 });
+    const { deviceId } = req.params;
+
+    // Time threshold = last 24 hours
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    // Delete old alerts
+    await Alert.deleteMany({
+      deviceId,
+      createdAt: { $lt: oneDayAgo }
+    });
+
+    // Fetch alerts from the past 24 hours
+    const alerts = await Alert.find({
+      deviceId,
+      createdAt: { $gte: oneDayAgo }
+    }).sort({ createdAt: -1 });
+
     res.json(alerts);
   } catch (err) {
     res.status(500).json({ error: err.message });
