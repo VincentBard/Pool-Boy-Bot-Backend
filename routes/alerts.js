@@ -32,6 +32,24 @@ router.get("/:deviceId", authMiddleware, ensureUser, async (req, res) => {
   }
 });
 
+// DELETE a single alert
+router.delete("/:alertId", authMiddleware, ensureUser, async (req, res) => {
+  try {
+    const { alertId } = req.params;
+
+    const alert = await Alert.findById(alertId);
+    if (!alert) {
+      return res.status(404).json({ message: "Alert not found" });
+    }
+
+    await Alert.findByIdAndDelete(alertId);
+
+    res.json({ message: "Alert deleted", id: alertId });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Create a new alert
 router.post("/:deviceId", authMiddleware, ensureUser, async (req, res, next) => {
   try {
