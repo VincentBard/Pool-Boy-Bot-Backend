@@ -2,6 +2,7 @@ import express from "express";
 import { Alert } from "../database/index.js";
 import authMiddleware from "../middleware/auth.js";
 import ensureUser from "../middleware/ensureUser.js";
+import Device from "../database/deviceSchema.js";
 
 const router = express.Router();
 
