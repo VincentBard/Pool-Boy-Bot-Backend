@@ -51,6 +51,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/devices", deviceRoutes);
 app.use("/api/readings", readingRoutes);
 app.use("/api/alerts", alertRoutes);
+app.use("/api/perimeter", perimeterRoutes);
 
 app.get("/getToken", async (req, res) => {
   const { identity = "guest", roomName = "default" } = req.query;
