@@ -13,6 +13,7 @@ import deviceRoutes from "./routes/devices.js";
 import readingRoutes from "./routes/readings.js";
 import alertRoutes from "./routes/alerts.js";
 import perimeterRoutes from "./routes/perimeter.js";
+import settingsRoutes from "./routes/settingsRoutes.js";
 
 dotenv.config();
 
@@ -53,6 +54,7 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/readings", readingRoutes);
 app.use("/api/alerts", alertRoutes);
 app.use("/api/perimeter", perimeterRoutes);
+app.use("/api/settings", settingsRoutes);
 
 app.get("/getToken", async (req, res) => {
   const { identity = "guest", roomName = "default" } = req.query;
