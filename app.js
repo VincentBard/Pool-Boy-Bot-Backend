@@ -13,7 +13,7 @@ import deviceRoutes from "./routes/devices.js";
 import readingRoutes from "./routes/readings.js";
 import alertRoutes from "./routes/alerts.js";
 import perimeterRoutes from "./routes/perimeter.js";
-import settingsRoutes from "./routes/settingsRoutes.js";
+import settingsRoutes from "./routes/settings.js";
 
 dotenv.config();
 
