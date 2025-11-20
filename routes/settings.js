@@ -1,7 +1,7 @@
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
 import ensureUser from "../middleware/ensureUser.js";
-import UserSettings from "../database/userSettingsSchema.js";
+import UserSettings from "../database/settingsSchema.js";
 
 const router = express.Router();
 
