@@ -41,6 +41,9 @@ const UserSettingsSchema = new mongoose.Schema({
   autoEngageInflatable: Boolean,
   autoStopRobotOnAlert: Boolean,
   autoRecordOnAlert: Boolean,
+  autoRoamOn: Boolean, 
+
+
 
   updatedAt: { type: Date, default: Date.now },
 });
