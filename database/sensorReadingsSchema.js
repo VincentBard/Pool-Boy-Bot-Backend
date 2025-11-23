@@ -13,7 +13,8 @@ const readingSchema = new mongoose.Schema(
     // Battery information
     batteryVoltage: Number,       // raw voltage reading
     batteryPercentage: Number,    // normalized percentage (0–100)
-    tilt: Number,
+    roll: Number,
+    pitch: Number,
 
     recordedBy: { type: String }, // "machine" or user email
   },
