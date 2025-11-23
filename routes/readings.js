@@ -80,7 +80,9 @@ router.post("/", authMiddleware, ensureUser, async (req, res, next) => {
       pH, 
       tds, 
       batteryVoltage, 
-      batteryPercentage 
+      batteryPercentage,
+      roll,
+      pitch 
     } = req.body;
 
     if (!deviceId) {
@@ -101,6 +103,8 @@ router.post("/", authMiddleware, ensureUser, async (req, res, next) => {
       tds,
       batteryVoltage,
       batteryPercentage,
+      roll,
+      pitch, 
       recordedBy: req.user.isMachine ? "machine" : req.user.email,
     });
 
