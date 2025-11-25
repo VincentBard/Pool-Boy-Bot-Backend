@@ -53,7 +53,15 @@ router.delete("/:alertId", authMiddleware, ensureUser, async (req, res) => {
 // Create a new alert
 router.post("/:deviceId", authMiddleware, ensureUser, async (req, res, next) => {
   try {
-    const { alertType, message, severity } = req.body;
+    const { 
+        alertType, 
+        message, 
+        severity, 
+        clipUrl, 
+        clipDurationSeconds, 
+        clipStartTs, 
+        snapshotUrl 
+    } = req.body;
     const { deviceId } = req.params;
 
     if (!deviceId) {
@@ -66,13 +74,19 @@ router.post("/:deviceId", authMiddleware, ensureUser, async (req, res, next) => 
       return res.status(404).json({ message: "Device not found" });
     }
 
-    // Create alert with "recordedBy" identical to reading logic
+    // Create alert with all fields
     const alert = new Alert({
       device: device._id,
       alertType,
       message,
       severity,
       recordedBy: req.user.isMachine ? "machine" : req.user.email,
+      
+      // Include clip metadata
+      clipUrl,             
+      clipDurationSeconds, 
+      clipStartTs,         
+      snapshotUrl 
     });
 
     await alert.save();
