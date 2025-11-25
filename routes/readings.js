@@ -20,6 +20,7 @@ router.get("/", authMiddleware, ensureUser, async (req, res, next) => {
   }
 });
 // 📌 GET all readings for a specific device
+// 📌 GET all readings for a specific device
 router.get("/device/:deviceId", authMiddleware, ensureUser, async (req, res, next) => {
   try {
     if (req.user.isMachine) {
@@ -33,8 +34,26 @@ router.get("/device/:deviceId", authMiddleware, ensureUser, async (req, res, nex
       return res.status(404).json({ message: "Device not found" });
     }
 
+    // ---------------------------------------------------------
+    // 🔥 CLEANUP: Delete readings older than 7 days (async)
+    // ---------------------------------------------------------
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    Reading.deleteMany(
+      { device: deviceId, createdAt: { $lt: oneWeekAgo } }
+    )
+      .then((result) => {
+        console.log(`🧹 Cleanup complete: ${result.deletedCount} old readings removed for device ${deviceId}`);
+      })
+      .catch((err) => {
+        console.error("Cleanup error:", err);
+      });
+
+    // ---------------------------------------------------------
+    // Return fresh readings
+    // ---------------------------------------------------------
     const readings = await Reading.find({ device: deviceId })
-      .sort({ createdAt: -1 }) // newest first
+      .sort({ createdAt: -1 })
       .populate("device");
 
     res.json(readings);
@@ -42,6 +61,7 @@ router.get("/device/:deviceId", authMiddleware, ensureUser, async (req, res, nex
     next(err);
   }
 });
+
 
 // 📌 GET the latest reading for a specific device
 router.get("/device/:deviceId/latest", authMiddleware, ensureUser, async (req, res, next) => {
